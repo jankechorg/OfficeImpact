@@ -79,8 +79,8 @@ function safeExternalUrl(value = "") {
   }
 }
 
-function googleMapsUrls(address = "") {
-  const query = String(address || "").trim();
+function googleMapsUrls(queryValue = "") {
+  const query = String(queryValue || "").trim();
   if (!query) return { embed: "", link: "" };
 
   const encoded = encodeURIComponent(query);
@@ -528,17 +528,32 @@ function openEvent(id) {
     : `<p>${escapeHtml(event.summary || "")}</p>`;
   const venue = String(event.location || "").trim();
   const address = String(event.address || "").trim();
+  const mapQuery = String(event.map_query || "").trim() || address;
+  const venueImage = assetUrl(event.venue_image);
   const meta = [event.time, venue].filter(Boolean).join(" · ");
-  const maps = googleMapsUrls(address);
-  const locationBlock = address ? `
-    <div class="event-location">
-      <div class="event-location__details">
+  const maps = googleMapsUrls(mapQuery);
+
+  const locationPanels = [];
+
+  if (venue || address) {
+    locationPanels.push(`
+      <div class="event-location__panel event-location__details">
         <span class="event-location__label">Location</span>
         ${venue ? `<strong>${escapeHtml(venue)}</strong>` : ""}
-        <p>${escapeHtml(address)}</p>
-        <a href="${escapeHtml(maps.link)}" target="_blank" rel="noopener noreferrer">Open in Google Maps &nearr;</a>
-      </div>
-      <div class="event-location__map">
+        ${address ? `<p>${escapeHtml(address)}</p>` : ""}
+      </div>`);
+  }
+
+  if (venueImage) {
+    locationPanels.push(`
+      <figure class="event-location__panel event-location__image">
+        <img src="${escapeHtml(venueImage)}" alt="${escapeHtml(venue ? `${venue} venue` : `${event.title} venue`)}" loading="lazy">
+      </figure>`);
+  }
+
+  if (maps.embed) {
+    locationPanels.push(`
+      <div class="event-location__panel event-location__map">
         <iframe
           src="${escapeHtml(maps.embed)}"
           title="Map for ${escapeHtml(event.title)}"
@@ -546,8 +561,13 @@ function openEvent(id) {
           referrerpolicy="no-referrer-when-downgrade"
           allowfullscreen
         ></iframe>
-      </div>
-    </div>` : "";
+      </div>`);
+  }
+
+  const panelCount = Math.max(1, Math.min(3, locationPanels.length));
+  const locationBlock = locationPanels.length
+    ? `<div class="event-location event-location--${panelCount}">${locationPanels.join("")}</div>`
+    : "";
 
   openDialog(`
     <div class="dialog-body">
@@ -558,6 +578,19 @@ function openEvent(id) {
       ${locationBlock}
       ${registrationUrl ? `<a class="dialog-source" href="${escapeHtml(registrationUrl)}" target="_blank" rel="noopener noreferrer">Event details / registration &nearr;</a>` : ""}
     </div>`);
+
+  const location = $(".event-location", $("#dialogContent"));
+  const venueImageElement = $(".event-location__image img", $("#dialogContent"));
+  if (location && venueImageElement) {
+    venueImageElement.addEventListener("error", () => {
+      const panel = venueImageElement.closest(".event-location__image");
+      if (panel) panel.remove();
+      const remaining = $$(".event-location__panel", location).length;
+      location.classList.remove("event-location--1", "event-location--2", "event-location--3");
+      if (remaining) location.classList.add(`event-location--${Math.max(1, Math.min(3, remaining))}`);
+      if (!remaining) location.remove();
+    }, { once: true });
+  }
 }
 
 function openDialog(html) {
