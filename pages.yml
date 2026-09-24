@@ -1,0 +1,194 @@
+# Pages CMS configuration for a dedicated static Office Impact repository.
+# This file must live at the repository root as: .pages.yml
+
+media:
+  input: media
+  output: media
+  rename: safe
+  categories: [image]
+  extensions: [jpg, jpeg, png, webp]
+
+settings:
+  content:
+    merge: true
+
+content:
+  - name: posts
+    label: Posts
+    type: file
+    path: content/posts.json
+    format: json
+    list: true
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+
+      - name: slug
+        label: Slug
+        type: string
+        required: true
+        pattern: "^[a-z0-9-]+$"
+
+      - name: date
+        label: Publication date
+        type: date
+        required: true
+
+      - name: category
+        label: Category
+        type: select
+        options:
+          values: [Community, Learning, Perspective, News]
+
+      - name: source
+        label: Source label
+        type: string
+
+      - name: source_url
+        label: Source / LinkedIn URL
+        type: string
+        description: Use an https:// URL.
+
+      - name: excerpt
+        label: Short summary
+        type: text
+        required: true
+
+      - name: body
+        label: Full story
+        type: rich-text
+        options:
+          format: html
+          media: false
+          switcher: false
+
+      - name: featured
+        label: Featured
+        type: boolean
+
+      - name: published
+        label: Published
+        type: boolean
+        description: Hidden items are still stored in the public repository; do not use for confidential drafts.
+
+    operations:
+      create: true
+      rename: false
+      delete: true
+
+  - name: events
+    label: Events
+    type: file
+    path: content/events.json
+    format: json
+    list: true
+    fields:
+      - name: id
+        label: Event ID
+        type: string
+        required: true
+        pattern: "^[a-z0-9-]+$"
+
+      - name: title
+        label: Event title
+        type: string
+        required: true
+
+      - name: date
+        label: Date
+        type: date
+        required: true
+
+      - name: time
+        label: Time
+        type: string
+
+      - name: location
+        label: Location
+        type: string
+
+      - name: type
+        label: Event type
+        type: select
+        options:
+          values: [Summit, Community meetup, Roundtable, Workshop, Online]
+
+      - name: summary
+        label: Short summary
+        type: text
+
+      - name: body
+        label: Event details
+        type: rich-text
+        options:
+          format: html
+          media: false
+          switcher: false
+
+      - name: registration_url
+        label: Registration / details URL
+        type: string
+        description: Use an https:// URL.
+
+      - name: published
+        label: Published
+        type: boolean
+        description: Hidden items are still stored in the public repository; do not use for confidential drafts.
+
+    operations:
+      create: true
+      rename: false
+      delete: true
+
+  - name: people
+    label: People
+    type: file
+    path: content/people.json
+    format: json
+    list: true
+    fields:
+      - name: name
+        label: Name
+        type: string
+        required: true
+
+      - name: role
+        label: Role
+        type: string
+
+      - name: organization
+        label: Organisation
+        type: string
+
+      - name: bio
+        label: Short bio
+        type: text
+
+      - name: linkedin_url
+        label: LinkedIn URL
+        type: string
+        description: Use an https:// URL.
+
+      - name: image
+        label: Profile image
+        type: image
+        description: Upload or select an image, then save the person record.
+        options:
+          categories: [image]
+          extensions: [jpg, jpeg, png, webp]
+          rename: safe
+
+      - name: featured
+        label: Featured
+        type: boolean
+
+      - name: published
+        label: Published
+        type: boolean
+
+    operations:
+      create: true
+      rename: false
+      delete: true
