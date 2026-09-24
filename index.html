@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Office Impact Community - a peer community for the people who shape workplace experience.">
+  <meta name="theme-color" content="#242321">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'none'; frame-src 'none'; form-action 'none'; media-src 'none'; worker-src 'none'">
+  <title>Office Impact Community - Workplace community</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="nav-transition" id="navTransition" aria-hidden="true">
+    <div class="nav-transition__mark">
+      <img src="./media/office-impact-logo.jpg" alt="">
+      <span></span>
+    </div>
+  </div>
+
+  <header class="site-header" id="top">
+    <div class="shell site-header__inner">
+      <a class="brand brand--logo" href="#top" aria-label="Office Impact Community home">
+        <img class="brand-logo" src="./media/office-impact-logo.jpg" alt="Office Impact Community">
+      </a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="#events">Events</a>
+        <a href="#stories">Stories</a>
+        <a href="#people">People</a>
+        <a href="#about">About</a>
+      </nav>
+      <a class="button button--dark header-cta" href="https://www.linkedin.com/groups/42222009/" target="_blank" rel="noopener noreferrer">Join on LinkedIn &nearr;</a>
+      <button class="menu-button" type="button" aria-label="Open menu" aria-expanded="false">Menu</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="shell hero-grid">
+        <div class="hero-copy">
+          <span class="eyebrow">Amsterdam · workplace community</span>
+          <h1>The people who make workplaces <em>work.</em></h1>
+          <p class="hero-lead">A peer community for office, workplace, facilities and community professionals to meet, exchange practical ideas and shape better places to work.</p>
+          <div class="hero-actions">
+            <a class="button button--accent" href="#events">See what's happening</a>
+            <a class="text-link" href="#stories">Explore community stories <span>&searr;</span></a>
+          </div>
+        </div>
+        <div class="hero-art hero-photo">
+          <img src="./media/office-impact-hero.jpg" alt="Office Impact community members in conversation at a workplace event">
+        </div>
+      </div>
+    </section>
+
+    <section class="manifesto" id="about">
+      <div class="shell manifesto-grid">
+        <div>
+          <span class="section-kicker">Why this community</span>
+        </div>
+        <div class="manifesto-copy">
+          <p>Office managers rarely have a team of people doing exactly the same job. Yet they influence culture, connection, wellbeing and how the workplace feels every day.</p>
+          <p class="muted">Office Impact creates a place to compare notes, learn from peers and make the role more visible.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--events" id="events">
+      <div class="shell">
+        <div class="section-heading">
+          <div>
+            <span class="section-kicker">Calendar</span>
+            <h2>Meet in real life.</h2>
+          </div>
+          <div class="section-heading__aside">A compact six-month view of what's ahead, with previous events available in the archive below.</div>
+        </div>
+
+        <div class="calendar-card">
+          <div class="calendar-toolbar">
+            <button id="calendarPrev" class="icon-button" type="button" aria-label="Previous six months">&larr;</button>
+            <div class="calendar-toolbar__title">
+              <span>Next six months</span>
+              <strong id="calendarLabel">Calendar</strong>
+            </div>
+            <button id="calendarNext" class="icon-button" type="button" aria-label="Next six months">&rarr;</button>
+          </div>
+          <div class="calendar-grid" id="calendarGrid" aria-live="polite"></div>
+          <div class="calendar-legend"><span><i></i> Click a month with events for details</span></div>
+        </div>
+
+        <div class="event-archive">
+          <div class="list-heading" id="eventListHeading">
+            <span>Upcoming</span>
+            <span></span>
+          </div>
+          <div class="event-list" id="eventList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--stories" id="stories">
+      <div class="shell">
+        <div class="section-heading section-heading--light">
+          <div>
+            <span class="section-kicker">Stories & LinkedIn highlights</span>
+            <h2>What the community is talking about.</h2>
+          </div>
+          <div class="section-heading__aside">Selected community perspectives, practical ideas and links to the original conversation.</div>
+        </div>
+        <div class="story-grid" id="storyGrid"></div>
+      </div>
+    </section>
+
+    <section class="section section--people" id="people">
+      <div class="shell">
+        <div class="section-heading">
+          <div>
+            <span class="section-kicker">People</span>
+            <h2>Meet the voices in the room.</h2>
+          </div>
+          <div class="section-heading__aside">People helping shape workplace experience across the community.</div>
+        </div>
+        <div class="people-grid" id="peopleGrid"></div>
+      </div>
+    </section>
+
+    <section class="section section--join">
+      <div class="shell join-card">
+        <div>
+          <span class="section-kicker">Stay connected</span>
+          <h2>One community.<br>Between the events, too.</h2>
+        </div>
+        <div class="join-card__copy">
+          <p>Join the LinkedIn group for conversations, questions, useful suppliers and the next Office Impact gathering.</p>
+          <a class="button button--dark" href="https://www.linkedin.com/groups/42222009/" target="_blank" rel="noopener noreferrer">Open LinkedIn group &nearr;</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="shell footer-grid">
+      <a class="brand brand--footer brand--logo" href="#top" aria-label="Office Impact Community home">
+        <img class="brand-logo brand-logo--footer" src="./media/office-impact-logo.jpg" alt="Office Impact Community">
+      </a>
+      <p>A peer community for office, workplace, facilities and community professionals.</p>
+      <div class="footer-links">
+        <a href="https://www.linkedin.com/groups/42222009/" target="_blank" rel="noopener noreferrer">LinkedIn group &nearr;</a>
+        <a href="#top">Back to top &uarr;</a>
+      </div>
+    </div>
+  </footer>
+
+  <dialog class="content-dialog" id="contentDialog">
+    <button class="dialog-close" id="dialogClose" type="button" aria-label="Close">&times;</button>
+    <div id="dialogContent"></div>
+  </dialog>
+
+  <script src="./app.js" defer></script>
+</body>
+</html>
