@@ -1,6 +1,6 @@
 media:
-  input: public/office-impact/media
-  output: /office-impact/media
+  input: media
+  output: media
   rename: safe
   categories: [image]
   extensions: [jpg, jpeg, png, webp]
