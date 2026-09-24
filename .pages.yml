@@ -13,7 +13,7 @@ content:
   - name: office-impact-posts
     label: Office Impact · Posts
     type: file
-    path: public/office-impact/content/posts.json
+    path: content/posts.json
     format: json
     list: true
     fields:
@@ -65,7 +65,7 @@ content:
   - name: office-impact-events
     label: Office Impact · Events
     type: file
-    path: public/office-impact/content/events.json
+    path: content/events.json
     format: json
     list: true
     fields:
@@ -119,7 +119,7 @@ content:
   - name: office-impact-people
     label: Office Impact · People
     type: file
-    path: public/office-impact/content/people.json
+    path: content/people.json
     format: json
     list: true
     fields:
