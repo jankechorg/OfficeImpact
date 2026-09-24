@@ -109,6 +109,11 @@ content:
         label: Location
         type: string
 
+      - name: address
+        label: Physical address
+        type: string
+        description: Full street address for the map, e.g. Danzigerbocht 55, 1013 AM Amsterdam, Netherlands
+
       - name: type
         label: Event type
         type: select
