@@ -64,6 +64,21 @@ content:
           media: false
           switcher: false
 
+      - name: image
+        label: Story image
+        type: image
+        description: Optional. Featured stories use this image on the homepage; other stories show it in the story detail.
+        options:
+        path: stories
+        categories: [image]
+        extensions: [jpg, jpeg, png, webp]
+        rename: safe
+
+- name: image_alt
+  label: Image description
+  type: string
+  description: Short description of the image for accessibility.
+
       - name: featured
         label: Featured
         type: boolean
@@ -122,6 +137,7 @@ content:
         categories: [image]
         extensions: [jpg, jpeg, png, webp]
         rename: safe
+        path: events
 
       - name: map_query
         label: Map location override
@@ -198,6 +214,7 @@ content:
           categories: [image]
           extensions: [jpg, jpeg, png, webp]
           rename: safe
+          path: people
 
       - name: featured
         label: Featured
