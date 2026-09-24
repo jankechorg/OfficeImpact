@@ -74,10 +74,10 @@ content:
         extensions: [jpg, jpeg, png, webp]
         rename: safe
 
-- name: image_alt
-  label: Image description
-  type: string
-  description: Short description of the image for accessibility.
+      - name: image_alt
+        label: Image description
+        type: string
+        description: Short description of the image for accessibility.
 
       - name: featured
         label: Featured
