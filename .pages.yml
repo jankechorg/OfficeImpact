@@ -148,6 +148,7 @@ content:
           categories: [image]
           extensions: [jpg, jpeg, png, webp]
           rename: safe
+          path: media/people
       - name: featured
         label: Featured
         type: boolean
