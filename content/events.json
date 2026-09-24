@@ -10,5 +10,16 @@
     "body": "<p>The first Office Impact Summit was created for the people who run the workplace and shape how it feels. The programme combined practical roundtables, keynote sessions and time to connect with peers.</p>",
     "registration_url": "https://officeimpact.co/",
     "published": true
+  },
+  {
+    "id": "test-event-001",
+    "title": "Community coffee",
+    "date": "2026-09-30",
+    "time": "14:00",
+    "location": "HiBob office",
+    "type": "Community meetup",
+    "summary": "Regular quarterly catch up",
+    "body": "<p></p>",
+    "published": true
   }
 ]
