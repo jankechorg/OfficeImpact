@@ -185,7 +185,10 @@ async function init() {
 
     state.posts = posts
       .filter((item) => item.published !== false)
-      .sort((a, b) => parseDate(b.date) - parseDate(a.date));
+      .sort((a, b) => {
+        if (Boolean(a.featured) !== Boolean(b.featured)) return a.featured ? -1 : 1;
+        return parseDate(b.date) - parseDate(a.date);
+      });
 
     state.events = events
       .filter((item) => item.published !== false)
@@ -372,19 +375,40 @@ function renderStories() {
     return;
   }
 
-  container.innerHTML = state.posts.slice(0, 6).map((post, index) => `
-    <article class="story-card tilt-card reveal reveal-delay-${(index % 4) + 1}">
-      <div class="story-card__meta"><span>${escapeHtml(post.category || "Update")}</span><span>${escapeHtml(formatDate(post.date, { day: "2-digit", month: "short", year: "numeric" }))}</span></div>
-      <h3>${escapeHtml(post.title)}</h3>
-      <p>${escapeHtml(post.excerpt || "")}</p>
-      <div class="story-card__footer">
-        <span>${post.source === "LinkedIn" ? "LinkedIn highlight" : "Community story"}</span>
-        <button type="button" data-post="${escapeHtml(post.slug)}">Read &rarr;</button>
-      </div>
-    </article>`).join("");
+  container.innerHTML = state.posts.slice(0, 6).map((post, index) => {
+    const image = index === 0 && post.featured ? assetUrl(post.image) : "";
+    const imageAlt = String(post.image_alt || post.title || "").trim();
+    const imageClass = image ? " story-card--with-image" : "";
+
+    return `
+      <article class="story-card${imageClass} tilt-card reveal reveal-delay-${(index % 4) + 1}">
+        ${image ? `
+          <div class="story-card__image">
+            <img src="${escapeHtml(image)}" alt="${escapeHtml(imageAlt)}" loading="lazy">
+          </div>` : ""}
+        <div class="story-card__body">
+          <div class="story-card__meta"><span>${escapeHtml(post.category || "Update")}</span><span>${escapeHtml(formatDate(post.date, { day: "2-digit", month: "short", year: "numeric" }))}</span></div>
+          <h3>${escapeHtml(post.title)}</h3>
+          <p>${escapeHtml(post.excerpt || "")}</p>
+          <div class="story-card__footer">
+            <span>${post.source === "LinkedIn" ? "LinkedIn highlight" : "Community story"}</span>
+            <button type="button" data-post="${escapeHtml(post.slug)}">Read &rarr;</button>
+          </div>
+        </div>
+      </article>`;
+  }).join("");
 
   $$('[data-post]', container).forEach((button) => {
     button.addEventListener("click", () => openPost(button.dataset.post));
+  });
+
+  $$(".story-card__image img", container).forEach((img) => {
+    img.addEventListener("error", () => {
+      const imagePanel = img.closest(".story-card__image");
+      const card = img.closest(".story-card");
+      if (imagePanel) imagePanel.remove();
+      if (card) card.classList.remove("story-card--with-image");
+    }, { once: true });
   });
 
   registerDynamicMotion(container);
@@ -504,6 +528,8 @@ function openPost(slug) {
   if (!post) return;
 
   const sourceUrl = safeExternalUrl(post.source_url);
+  const image = assetUrl(post.image);
+  const imageAlt = String(post.image_alt || post.title || "").trim();
   const body = post.body
     ? sanitizeRichText(post.body)
     : `<p>${escapeHtml(post.excerpt || "")}</p>`;
@@ -513,9 +539,18 @@ function openPost(slug) {
       <span class="section-kicker">${escapeHtml(post.category || "Story")}</span>
       <h2>${escapeHtml(post.title)}</h2>
       <div class="dialog-meta"><span>${escapeHtml(formatDate(post.date))}</span>${post.source ? `<span>· ${escapeHtml(post.source)}</span>` : ""}</div>
+      ${image ? `
+        <figure class="story-dialog__image">
+          <img src="${escapeHtml(image)}" alt="${escapeHtml(imageAlt)}">
+        </figure>` : ""}
       <div class="dialog-copy">${body}</div>
       ${sourceUrl ? `<a class="dialog-source" href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">View original ${escapeHtml(post.source || "source")} &nearr;</a>` : ""}
     </div>`);
+
+  const imageElement = $(".story-dialog__image img", $("#dialogContent"));
+  if (imageElement) {
+    imageElement.addEventListener("error", () => imageElement.closest(".story-dialog__image")?.remove(), { once: true });
+  }
 }
 
 function openEvent(id) {
