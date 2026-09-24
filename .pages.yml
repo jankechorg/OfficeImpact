@@ -114,6 +114,20 @@ content:
         type: string
         description: Full street address for the map, e.g. Danzigerbocht 55, 1013 AM Amsterdam, Netherlands
 
+      - name: venue_image
+        label: Venue image
+        type: image
+        description: Optional photo of the venue or building.
+        options:
+        categories: [image]
+        extensions: [jpg, jpeg, png, webp]
+        rename: safe
+
+      - name: map_query
+        label: Map location override
+        type: string
+        description: Optional. Use only if Google Maps does not resolve the physical address correctly. Enter a place name, address, or coordinates.
+
       - name: type
         label: Event type
         type: select
