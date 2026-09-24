@@ -79,6 +79,17 @@ function safeExternalUrl(value = "") {
   }
 }
 
+function googleMapsUrls(address = "") {
+  const query = String(address || "").trim();
+  if (!query) return { embed: "", link: "" };
+
+  const encoded = encodeURIComponent(query);
+  return {
+    embed: `https://www.google.com/maps?q=${encoded}&output=embed`,
+    link: `https://www.google.com/maps/search/?api=1&query=${encoded}`,
+  };
+}
+
 function safeRichLinkUrl(value = "") {
   const raw = String(value || "").trim();
   if (!raw) return "";
@@ -515,7 +526,28 @@ function openEvent(id) {
   const body = event.body
     ? sanitizeRichText(event.body)
     : `<p>${escapeHtml(event.summary || "")}</p>`;
-  const meta = [event.time, event.location].filter(Boolean).join(" · ");
+  const venue = String(event.location || "").trim();
+  const address = String(event.address || "").trim();
+  const meta = [event.time, venue].filter(Boolean).join(" · ");
+  const maps = googleMapsUrls(address);
+  const locationBlock = address ? `
+    <div class="event-location">
+      <div class="event-location__details">
+        <span class="event-location__label">Location</span>
+        ${venue ? `<strong>${escapeHtml(venue)}</strong>` : ""}
+        <p>${escapeHtml(address)}</p>
+        <a href="${escapeHtml(maps.link)}" target="_blank" rel="noopener noreferrer">Open in Google Maps &nearr;</a>
+      </div>
+      <div class="event-location__map">
+        <iframe
+          src="${escapeHtml(maps.embed)}"
+          title="Map for ${escapeHtml(event.title)}"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </div>` : "";
 
   openDialog(`
     <div class="dialog-body">
@@ -523,6 +555,7 @@ function openEvent(id) {
       <h2>${escapeHtml(event.title)}</h2>
       <div class="dialog-meta"><span>${escapeHtml(formatDate(event.date))}</span>${meta ? `<span>· ${escapeHtml(meta)}</span>` : ""}</div>
       <div class="dialog-copy">${body}</div>
+      ${locationBlock}
       ${registrationUrl ? `<a class="dialog-source" href="${escapeHtml(registrationUrl)}" target="_blank" rel="noopener noreferrer">Event details / registration &nearr;</a>` : ""}
     </div>`);
 }
