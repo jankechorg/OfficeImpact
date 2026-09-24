@@ -1,6 +1,6 @@
 media:
   input: media
-  output: /media
+  output: media
   rename: safe
   categories: [image]
   extensions: [jpg, jpeg, png, webp]
