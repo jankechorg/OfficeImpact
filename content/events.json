@@ -15,15 +15,15 @@
   },
   {
     "id": "test-event-001",
-    "title": "Community coffee",
-    "date": "2026-09-30",
-    "time": "14:00",
+    "title": "Q1 Community Coffee Meetup",
+    "date": "2027-01-22",
+    "time": "TBD",
     "location": "HiBob office",
     "address": "Weesperstraat 113, 1018 VN Amsterdam",
     "venue_image": "media/hibob.webp",
     "type": "Community meetup",
-    "summary": "Regular quarterly catch up",
-    "body": "<p></p>",
+    "summary": "The first Office Impact Community Meetup is for the people who run the workplace and shape how it feels.\n\nExpect practical conversations, fresh ideas and time to connect with peers. More details, including the theme and agenda, will be shared soon.",
+    "body": "<p>The first Office Impact Community Meetup is for the people who run the workplace and shape how it feels.</p><p>Expect practical conversations, fresh ideas and time to connect with peers. More details, including the theme and agenda, will be shared soon.</p>",
     "published": true
   }
 ]
