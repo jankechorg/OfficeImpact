@@ -2,8 +2,10 @@
   {
     "name": "Michaela Reindlová",
     "role": "Office Coordinator",
-    "organization": "HiBob | Founder, Office Impact Community",
-    "bio": "Michaela is originally from the Czech Republic but now calls Amsterdam home. As an Office Coordinator at HiBob, she looks after the office and the people in it, from operations and employee experience to wellbeing, events, vendors, budgets and new joiners.",
+    "organization": "HiBob",
+    "office_impact_role": "Founder, Office Impact Community",
+    "bio": "As an Office Coordinator at HiBob, she looks after the office and the people in it, from operations and employee experience to wellbeing, events, vendors, budgets and new joiners.",
+    "bio_long": "Michaela is originally from the Czech Republic but now calls Amsterdam home. As an Office Coordinator at HiBob, she looks after the office and the people in it, from operations and employee experience to wellbeing, events, vendors, budgets and new joiners.",
     "linkedin_url": "https://www.linkedin.com/in/michaela-reindlov%C3%A1-371925196",
     "image": "media/img8958.jpg",
     "featured": true,
