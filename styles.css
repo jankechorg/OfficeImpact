@@ -182,7 +182,11 @@ button.month-tile{cursor:pointer}
 .dialog-copy a{border-bottom:1px solid currentColor}
 .dialog-source{display:inline-flex;margin-top:24px;font-size:13px;font-weight:800;border-bottom:1px solid currentColor;padding-bottom:2px}
 .story-dialog__image{margin:0 0 30px;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--paper)}
-.story-dialog__image img{display:block;width:100%;max-height:430px;object-fit:cover}
+.story-dialog__image img{display:block;
+  width:100%;
+  height:auto;
+  max-height:none;
+  object-fit:contain;}
 .event-location{display:grid;gap:14px;margin-top:30px;padding-top:24px;border-top:1px solid var(--line);align-items:stretch}
 .event-location--1{grid-template-columns:minmax(0,1fr)}
 .event-location--2{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)}
