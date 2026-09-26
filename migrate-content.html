@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Office Impact content migration</title>
+  <style>
+    body{font-family:system-ui,sans-serif;max-width:900px;margin:40px auto;padding:0 20px;line-height:1.5;color:#222}
+    h1{font-size:32px}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0}
+    button{padding:10px 16px;border:1px solid #bbb;border-radius:10px;background:#fff;cursor:pointer}
+    button:disabled{opacity:.45;cursor:not-allowed}
+    textarea{width:100%;min-height:440px;padding:14px;font:13px/1.5 ui-monospace,monospace;border:1px solid #ccc;border-radius:12px}
+    #status{padding:12px 0;font-weight:600}
+    code{background:#f3f1ef;padding:2px 5px;border-radius:4px}
+  </style>
+  <script src="./migrate-content.js" defer></script>
+</head>
+<body>
+  <h1>Office Impact: migrate Posts + Events to Entries</h1>
+  <p>This one-time helper reads the current <code>content/posts.json</code> and <code>content/events.json</code> from the same GitHub Pages site and converts them into the unified <code>content/entries.json</code> format. It preserves current image paths and the webinar/event fields already stored in those files.</p>
+  <p>The known Office Impact Summit event and its recap post are merged into one Entry. Other legacy records are preserved as separate Entries unless a post already contains its own event date.</p>
+  <div class="actions">
+    <button id="generate" type="button">Generate entries.json</button>
+    <button id="download" type="button" disabled>Download entries.json</button>
+    <button id="copy" type="button" disabled>Copy JSON</button>
+  </div>
+  <div id="status">Ready.</div>
+  <textarea id="output" spellcheck="false" aria-label="Generated entries JSON"></textarea>
+  <p>After uploading the generated file as <code>content/entries.json</code> and verifying the site, delete this migration page and the old <code>posts.json</code> / <code>events.json</code>.</p>
+</body>
+</html>
