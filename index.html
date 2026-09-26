@@ -6,7 +6,7 @@
   <meta name="description" content="Office Impact Community - a peer community for the people who shape workplace experience.">
   <meta name="theme-color" content="#242321">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'none'; frame-src https://www.google.com https://maps.google.com; form-action 'none'; media-src 'none'; worker-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://cloudflareinsights.com; font-src 'self'; object-src 'none'; base-uri 'none'; frame-src https://www.google.com https://maps.google.com; form-action 'none'; media-src 'none'; worker-src 'none'">
   <title>Office Impact Community - Workplace community</title>
   <link rel="stylesheet" href="./styles.css">
 </head>
@@ -156,5 +156,8 @@
   </dialog>
 
   <script src="./app.js" defer></script>
+  <!-- Cloudflare Web Analytics -->
+  <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"b1084d1e83cb46878382c1d0899560a3"}'></script>
+  <!-- End Cloudflare Web Analytics -->
 </body>
 </html>
