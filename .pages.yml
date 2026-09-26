@@ -24,31 +24,38 @@ content:
         label: Title
         type: string
         required: true
+
       - name: slug
         label: Slug
         type: string
         required: true
         pattern: "^[a-z0-9-]+$"
+
       - name: date
         label: Publication date
         type: date
         required: true
+
       - name: category
         label: Category
         type: select
         options:
-          values: [Community, Learning, Perspective, News]
+          values: [Community, Learning, Perspective, News, Webinar]
+
       - name: source
         label: Source label
         type: string
+
       - name: source_url
         label: Source / LinkedIn URL
         type: string
         description: Use an https:// URL.
+
       - name: excerpt
         label: Short summary
         type: text
         required: true
+
       - name: image
         label: Story image
         type: image
@@ -58,10 +65,34 @@ content:
           categories: [image]
           extensions: [jpg, jpeg, png, webp]
           rename: safe
+
       - name: image_alt
         label: Image description
         type: string
         description: Short description for accessibility. If empty, the story title is used.
+
+      - name: event_date
+        label: Event / webinar date
+        type: date
+        description: Optional. If set, this post also appears in the calendar and event archive.
+
+      - name: event_time
+        label: Event / webinar time
+        type: string
+        description: Optional, e.g. 15:00-16:00 CET.
+
+      - name: event_location
+        label: Event location
+        type: string
+        description: Optional. Use Online for webinars or enter the venue / city.
+
+      - name: event_type
+        label: Calendar event type
+        type: select
+        options:
+          values: [Webinar, Online event, Workshop, Roundtable, Meetup, Other]
+        description: Used when the post is shown in the calendar.
+
       - name: body
         label: Full story
         type: rich-text
@@ -69,14 +100,17 @@ content:
           format: html
           media: false
           switcher: false
+
       - name: featured
         label: Featured
         type: boolean
         description: Featured stories are ordered first. The newest featured story becomes the large homepage highlight.
+
       - name: published
         label: Published
         type: boolean
         description: Hidden items remain in the public repository; do not use for confidential drafts.
+
     operations:
       create: true
       rename: false
@@ -94,24 +128,30 @@ content:
         type: string
         required: true
         pattern: "^[a-z0-9-]+$"
+
       - name: title
         label: Event title
         type: string
         required: true
+
       - name: date
         label: Date
         type: date
         required: true
+
       - name: time
         label: Time
         type: string
+
       - name: location
         label: Venue / city
         type: string
+
       - name: address
         label: Physical address
         type: string
         description: Full street address used for the map.
+
       - name: venue_image
         label: Venue image
         type: image
@@ -121,18 +161,22 @@ content:
           categories: [image]
           extensions: [jpg, jpeg, png, webp]
           rename: safe
+
       - name: map_query
         label: Map location override
         type: string
         description: Optional. Use only if Google Maps does not resolve the physical address correctly. Enter a place name, address, or coordinates.
+
       - name: type
         label: Event type
         type: select
         options:
           values: [Summit, Community meetup, Roundtable, Workshop, Online]
+
       - name: summary
         label: Short summary
         type: text
+
       - name: body
         label: Event details
         type: rich-text
@@ -140,14 +184,17 @@ content:
           format: html
           media: false
           switcher: false
+
       - name: registration_url
         label: Registration / details URL
         type: string
         description: Use an https:// URL.
+
       - name: published
         label: Published
         type: boolean
         description: Hidden items remain in the public repository; do not use for confidential drafts.
+
     operations:
       create: true
       rename: false
@@ -164,28 +211,35 @@ content:
         label: Name
         type: string
         required: true
+
       - name: role
         label: Role
         type: string
+
       - name: organization
         label: Organisation
         type: string
+
       - name: office_impact_role
         label: Role in Office Impact
         type: string
         description: Optional community role, e.g. Founder, Core team, Host, Ambassador or Contributor.
+
       - name: bio
         label: Short bio - homepage
         type: text
         description: A concise introduction for the People card on the main page.
+
       - name: bio_long
         label: Full bio - profile detail
         type: text
         description: Optional longer biography shown when the profile is opened. If blank, the short bio is used.
+
       - name: linkedin_url
         label: LinkedIn URL
         type: string
         description: Use an https:// URL.
+
       - name: image
         label: Profile image
         type: image
@@ -195,12 +249,15 @@ content:
           categories: [image]
           extensions: [jpg, jpeg, png, webp]
           rename: safe
+
       - name: featured
         label: Featured
         type: boolean
+
       - name: published
         label: Published
         type: boolean
+
     operations:
       create: true
       rename: false
