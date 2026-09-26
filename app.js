@@ -376,14 +376,25 @@ function renderStories() {
   }
 
   container.innerHTML = state.posts.slice(0, 6).map((post, index) => {
-    const image = index === 0 && post.featured ? assetUrl(post.image) : "";
+    const image = assetUrl(post.image);
     const imageAlt = String(post.image_alt || post.title || "").trim();
-    const imageClass = image ? " story-card--with-image" : "";
+    const isFeaturedCard = index === 0 && Boolean(post.featured);
+    const showFeaturedImage = Boolean(image && isFeaturedCard);
+    const showThumbnail = Boolean(image && !isFeaturedCard);
+    const imageClass = showFeaturedImage
+      ? " story-card--with-image"
+      : showThumbnail
+        ? " story-card--with-thumbnail"
+        : "";
 
     return `
       <article class="story-card${imageClass} tilt-card reveal reveal-delay-${(index % 4) + 1}">
-        ${image ? `
+        ${showFeaturedImage ? `
           <div class="story-card__image">
+            <img src="${escapeHtml(image)}" alt="${escapeHtml(imageAlt)}" loading="lazy">
+          </div>` : ""}
+        ${showThumbnail ? `
+          <div class="story-card__thumb">
             <img src="${escapeHtml(image)}" alt="${escapeHtml(imageAlt)}" loading="lazy">
           </div>` : ""}
         <div class="story-card__body">
@@ -402,12 +413,12 @@ function renderStories() {
     button.addEventListener("click", () => openPost(button.dataset.post));
   });
 
-  $$(".story-card__image img", container).forEach((img) => {
+  $$(".story-card__image img, .story-card__thumb img", container).forEach((img) => {
     img.addEventListener("error", () => {
-      const imagePanel = img.closest(".story-card__image");
+      const imagePanel = img.closest(".story-card__image, .story-card__thumb");
       const card = img.closest(".story-card");
       if (imagePanel) imagePanel.remove();
-      if (card) card.classList.remove("story-card--with-image");
+      if (card) card.classList.remove("story-card--with-image", "story-card--with-thumbnail");
     }, { once: true });
   });
 
