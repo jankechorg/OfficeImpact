@@ -137,8 +137,8 @@ button.month-tile{cursor:pointer}
 .story-card__image{order:2;min-width:0;overflow:hidden;background:rgba(255,255,255,.08)}
 .story-card__image img{width:100%;height:100%;min-height:390px;object-fit:cover}
 .story-card--with-thumbnail{min-height:390px}
-.story-card__thumb{width:42%;height:150px;margin:22px 0 0 26px;overflow:hidden;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:14px;display:flex;align-items:center;justify-content:center}
-.story-card__thumb img{display:block;width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain}
+.story-card__thumb{width:40%;margin:22px 0 0 26px;overflow:hidden;background:transparent;border:0;border-radius:14px;display:flex;align-items:flex-start;justify-content:flex-start}
+.story-card__thumb img{display:block;width:auto;height:auto;max-width:100%;max-height:132px;object-fit:contain;object-position:left top;border-radius:12px}
 .story-card--with-thumbnail .story-card__body{padding-top:20px}
 .story-card__meta{display:flex;justify-content:space-between;gap:12px;font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:800;opacity:.72}
 .story-card h3{font-size:32px;line-height:1.04;letter-spacing:-.045em;margin:auto 0 14px}
@@ -252,7 +252,8 @@ button.month-tile{cursor:pointer}
   .story-card--with-image{grid-template-columns:1fr}
   .story-card--with-image .story-card__image{order:0}
   .story-card__image img{min-height:240px;max-height:280px}
-  .story-card__thumb{width:44%;height:140px;margin:20px 0 0 24px}
+  .story-card__thumb{width:40%;margin:20px 0 0 24px}
+  .story-card__thumb img{max-height:122px}
   .people-grid{grid-template-columns:repeat(2,1fr)}
   .footer-grid{grid-template-columns:1fr 1fr}
   .footer-links{justify-content:flex-start}
@@ -290,7 +291,8 @@ button.month-tile{cursor:pointer}
   .story-card__body{padding:22px}
   .story-card:nth-child(1) h3{font-size:36px}
   .story-card__image img{min-height:210px;max-height:240px}
-  .story-card__thumb{width:42%;height:120px;margin:18px 0 0 22px}
+  .story-card__thumb{width:40%;margin:18px 0 0 22px}
+  .story-card__thumb img{max-height:110px}
   .story-card--with-thumbnail .story-card__body{padding-top:18px}
   .story-dialog__image{margin-bottom:24px;border-radius:16px}
   .story-dialog__image img{max-height:65vh}
