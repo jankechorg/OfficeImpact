@@ -36,7 +36,11 @@
     "event_date": "2027-01-04",
     "event_time": "11:00 - 12:00",
     "event_type": "Community meetup",
-    "event_details": "<p></p>"
+    "event_details": "<p></p>",
+    "event_location": "HiBob",
+    "address": "Weesperstraat 113, 1018 VN Amsterdam",
+    "venue_image": "media/hibob-2.webp",
+    "event_image_alt": "HiBob office"
   },
   {
     "id": "office-impact-summit-2026",
