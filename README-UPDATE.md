@@ -1,18 +1,38 @@
-# Office Impact story-image update
+Office Impact update: story thumbnails + posts in calendar
 
-Replace `app.js` and `styles.css` in the repository root.
+Files to replace at repository root:
+- app.js
+- styles.css
+- .pages.yml
 
-Replace `.pages.yml` only if you want the complete current CMS configuration included here. It contains:
-- story image + image alt text
-- event address + venue image + map override
-- media subfolder defaults for stories, events and people
+1. Thumbnail support
+Non-featured stories with an image render a 16:9 thumbnail on the homepage.
+Featured first story keeps the large feature-image layout.
+Story detail keeps the full-image contain behavior.
 
-The `media/*/.gitkeep` files simply create the optional subfolders in Git. Existing images can remain where they are; no migration is required.
+If the homepage still looks unchanged after replacing app.js and styles.css, the browser may be using cached static files. In index.html you can temporarily/version the references as:
 
-## Behaviour
-- Published posts are ordered with featured posts first, then newest date.
-- The newest featured post is the large first homepage highlight.
-- Its image is shown on the homepage when supplied.
-- Any post image is shown in the story detail popup.
-- Existing posts without images continue to work.
-- A missing/broken story image is removed gracefully.
+<link rel="stylesheet" href="./styles.css?v=20260926-2">
+<script src="./app.js?v=20260926-2" defer></script>
+
+2. Post/event calendar integration
+Posts now have optional Pages CMS fields:
+- event_date
+- event_time
+- event_location
+- event_type
+
+If event_date is set, the post automatically appears in:
+- the six-month calendar
+- Upcoming/Past event list
+
+Clicking that calendar/list item opens the post detail rather than duplicating the content in events.json.
+
+Example post fields:
+
+"event_date": "2026-10-22",
+"event_time": "15:00-16:00 CET",
+"event_location": "Online",
+"event_type": "Webinar"
+
+Leave event_date blank for normal posts; they stay out of the calendar.

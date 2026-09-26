@@ -166,6 +166,51 @@ function assetUrl(value) {
   }
 }
 
+function isTrue(value) {
+  return value === true || value === 1 || value === "true" || value === "1";
+}
+
+function getCalendarItems() {
+  const eventItems = state.events.map((event) => ({
+    key: `event:${event.id}`,
+    kind: "event",
+    sourceId: event.id,
+    title: event.title,
+    date: event.date,
+    time: event.time || "",
+    location: event.location || "",
+    type: event.type || "Community event",
+  }));
+
+  const postItems = state.posts
+    .filter((post) => /^\d{4}-\d{2}-\d{2}$/.test(String(post.event_date || "").trim()))
+    .map((post) => ({
+      key: `post:${post.slug}`,
+      kind: "post",
+      sourceId: post.slug,
+      title: post.title,
+      date: post.event_date,
+      time: post.event_time || "",
+      location: post.event_location || "",
+      type: post.event_type || "Webinar",
+    }));
+
+  return [...eventItems, ...postItems]
+    .filter((item) => item.title && /^\d{4}-\d{2}-\d{2}$/.test(String(item.date || "")))
+    .sort((a, b) => parseDate(a.date) - parseDate(b.date));
+}
+
+function openCalendarItem(key) {
+  const value = String(key || "");
+  if (value.startsWith("post:")) {
+    openPost(value.slice(5));
+    return;
+  }
+  if (value.startsWith("event:")) {
+    openEvent(value.slice(6));
+  }
+}
+
 async function loadJson(path) {
   const response = await fetch(path, {
     cache: "no-store",
@@ -186,7 +231,7 @@ async function init() {
     state.posts = posts
       .filter((item) => item.published !== false)
       .sort((a, b) => {
-        if (Boolean(a.featured) !== Boolean(b.featured)) return a.featured ? -1 : 1;
+        if (isTrue(a.featured) !== isTrue(b.featured)) return isTrue(a.featured) ? -1 : 1;
         return parseDate(b.date) - parseDate(a.date);
       });
 
@@ -240,7 +285,7 @@ function renderCalendar() {
   prev.title = "Previous six months";
   next.title = "Next six months";
 
-  const futureEvents = state.events.filter((event) => parseDate(event.date) >= today);
+  const futureEvents = getCalendarItems().filter((event) => parseDate(event.date) >= today);
 
   const tiles = months.map((monthDate, index) => {
     const monthStart = startOfMonth(monthDate);
@@ -252,7 +297,7 @@ function renderCalendar() {
       return eventDate >= monthStart && eventDate <= monthEnd;
     });
 
-    const ids = monthEvents.map((event) => event.id).join("|");
+    const ids = monthEvents.map((event) => event.key).join("|");
     const count = monthEvents.length;
     const countText = count ? `${count} event${count === 1 ? "" : "s"}` : "No events";
     const dateText = count
@@ -282,7 +327,7 @@ function renderCalendar() {
   $$("[data-month-events]", $("#calendarGrid")).forEach((button) => {
     button.addEventListener("click", () => {
       const ids = (button.dataset.monthEvents || "").split("|").filter(Boolean);
-      if (ids.length === 1) openEvent(ids[0]);
+      if (ids.length === 1) openCalendarItem(ids[0]);
       else if (ids.length > 1) openEventChoices(ids, `in ${button.dataset.monthName}`);
     });
   });
@@ -294,12 +339,13 @@ function renderEvents() {
   const container = $("#eventList");
   const heading = $("#eventListHeading");
   const today = startOfToday();
+  const calendarItems = getCalendarItems();
 
-  const upcoming = state.events
+  const upcoming = calendarItems
     .filter((event) => parseDate(event.date) >= today)
     .sort((a, b) => parseDate(a.date) - parseDate(b.date));
 
-  const past = state.events
+  const past = calendarItems
     .filter((event) => parseDate(event.date) < today)
     .sort((a, b) => parseDate(b.date) - parseDate(a.date));
 
@@ -339,12 +385,12 @@ function renderEvents() {
     const day = date.getDate();
     const month = new Intl.DateTimeFormat("en-GB", { month: "short" }).format(date);
     const year = date.getFullYear();
-    const metaParts = [event.time, event.location].filter(Boolean);
+    const metaParts = [event.type, event.time, event.location].filter(Boolean);
     if (showingPast || year !== today.getFullYear()) metaParts.unshift(String(year));
     const delayClass = `reveal-delay-${(index % 4) + 1}`;
 
     return `
-      <article class="event-item event-item--clickable reveal ${delayClass}" data-event="${escapeHtml(event.id)}" role="button" tabindex="0" aria-label="Open ${escapeHtml(event.title)}">
+      <article class="event-item event-item--clickable reveal ${delayClass}" data-calendar-key="${escapeHtml(event.key)}" role="button" tabindex="0" aria-label="Open ${escapeHtml(event.title)}">
         <div class="event-date"><strong>${day}</strong><span>${escapeHtml(month)}</span></div>
         <div class="event-info">
           <h3>${escapeHtml(event.title)}</h3>
@@ -354,8 +400,8 @@ function renderEvents() {
       </article>`;
   }).join("");
 
-  $$('[data-event]', container).forEach((item) => {
-    const open = () => openEvent(item.dataset.event);
+  $$('[data-calendar-key]', container).forEach((item) => {
+    const open = () => openCalendarItem(item.dataset.calendarKey);
     item.addEventListener("click", open);
     item.addEventListener("keydown", (event) => {
       if (event.key === "Enter" || event.key === " ") {
@@ -378,7 +424,7 @@ function renderStories() {
   container.innerHTML = state.posts.slice(0, 6).map((post, index) => {
     const image = assetUrl(post.image);
     const imageAlt = String(post.image_alt || post.title || "").trim();
-    const isFeaturedCard = index === 0 && Boolean(post.featured);
+    const isFeaturedCard = index === 0 && isTrue(post.featured);
     const showFeaturedImage = Boolean(image && isFeaturedCard);
     const showThumbnail = Boolean(image && !isFeaturedCard);
     const imageClass = showFeaturedImage
@@ -479,15 +525,16 @@ function renderPeople() {
   registerDynamicMotion(container);
 }
 
-function openEventChoices(ids, contextLabel = "this period") {
-  const events = ids
-    .map((id) => state.events.find((event) => event.id === id))
+function openEventChoices(keys, contextLabel = "this period") {
+  const allItems = getCalendarItems();
+  const events = keys
+    .map((key) => allItems.find((event) => event.key === key))
     .filter(Boolean)
     .sort((a, b) => parseDate(a.date) - parseDate(b.date));
 
   if (!events.length) return;
   if (events.length === 1) {
-    openEvent(events[0].id);
+    openCalendarItem(events[0].key);
     return;
   }
 
@@ -497,16 +544,16 @@ function openEventChoices(ids, contextLabel = "this period") {
       <h2>${events.length} events ${escapeHtml(contextLabel)}</h2>
       <div class="dialog-event-list">
         ${events.map((event) => `
-          <button class="dialog-event-choice" type="button" data-dialog-event="${escapeHtml(event.id)}">
+          <button class="dialog-event-choice" type="button" data-dialog-calendar-key="${escapeHtml(event.key)}">
             <span>${escapeHtml(formatDate(event.date, { day: "2-digit", month: "short", year: "numeric" }))}</span>
             <strong>${escapeHtml(event.title)}</strong>
-            <small>${escapeHtml([event.time, event.location].filter(Boolean).join(" · "))}</small>
+            <small>${escapeHtml([event.type, event.time, event.location].filter(Boolean).join(" · "))}</small>
           </button>`).join("")}
       </div>
     </div>`);
 
-  $$('[data-dialog-event]', $("#dialogContent")).forEach((button) => {
-    button.addEventListener("click", () => openEvent(button.dataset.dialogEvent));
+  $$('[data-dialog-calendar-key]', $("#dialogContent")).forEach((button) => {
+    button.addEventListener("click", () => openCalendarItem(button.dataset.dialogCalendarKey));
   });
 }
 
@@ -551,6 +598,13 @@ function openPost(slug) {
   const sourceUrl = safeExternalUrl(post.source_url);
   const image = assetUrl(post.image);
   const imageAlt = String(post.image_alt || post.title || "").trim();
+  const eventDate = String(post.event_date || "").trim();
+  const eventTime = String(post.event_time || "").trim();
+  const eventLocation = String(post.event_location || "").trim();
+  const eventType = String(post.event_type || "Webinar").trim();
+  const eventMeta = /^\d{4}-\d{2}-\d{2}$/.test(eventDate)
+    ? [formatDate(eventDate), eventTime, eventLocation].filter(Boolean).join(" · ")
+    : "";
   const body = post.body
     ? sanitizeRichText(post.body)
     : `<p>${escapeHtml(post.excerpt || "")}</p>`;
@@ -560,6 +614,7 @@ function openPost(slug) {
       <span class="section-kicker">${escapeHtml(post.category || "Story")}</span>
       <h2>${escapeHtml(post.title)}</h2>
       <div class="dialog-meta"><span>${escapeHtml(formatDate(post.date))}</span>${post.source ? `<span>· ${escapeHtml(post.source)}</span>` : ""}</div>
+      ${eventMeta ? `<div class="dialog-meta"><span>${escapeHtml(eventType)}</span><span>· ${escapeHtml(eventMeta)}</span></div>` : ""}
       ${image ? `
         <figure class="story-dialog__image">
           <img src="${escapeHtml(image)}" alt="${escapeHtml(imageAlt)}">
