@@ -40,7 +40,7 @@ content:
         label: Category
         type: select
         options:
-          values: [Community, Learning, Perspective, News]
+          values: [Community, Learning, Perspective, News, Summit]
 
       - name: source
         label: Source label
