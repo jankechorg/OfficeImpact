@@ -424,6 +424,10 @@ function renderPeople() {
   container.innerHTML = state.people.map((person, index) => {
     const image = assetUrl(person.image);
     const linkedin = safeExternalUrl(person.linkedin_url);
+    const professionalRole = [person.role, person.organization].filter(Boolean).join(" · ");
+    const officeImpactRole = String(person.office_impact_role || "").trim();
+    const shortBio = String(person.bio || "").trim();
+
     return `
       <article class="person-card person-card--interactive tilt-card reveal reveal-delay-${(index % 4) + 1}" data-person-index="${index}" role="button" tabindex="0" aria-label="Open profile for ${escapeHtml(person.name)}">
         <div class="person-avatar">
@@ -432,8 +436,9 @@ function renderPeople() {
         </div>
         <div class="person-copy">
           <h3>${escapeHtml(person.name)}</h3>
-          <div class="role">${escapeHtml([person.role, person.organization].filter(Boolean).join(" · "))}</div>
-          <p>${escapeHtml(person.bio || "")}</p>
+          ${professionalRole ? `<div class="role">${escapeHtml(professionalRole)}</div>` : ""}
+          ${officeImpactRole ? `<div class="office-impact-role">Office Impact · ${escapeHtml(officeImpactRole)}</div>` : ""}
+          ${shortBio ? `<p class="person-short-bio">${escapeHtml(shortBio)}</p>` : ""}
           <div class="person-actions">
             <span class="profile-link">View profile &rarr;</span>
             ${linkedin ? `<a href="${escapeHtml(linkedin)}" target="_blank" rel="noopener noreferrer">LinkedIn &nearr;</a>` : ""}
@@ -500,6 +505,10 @@ function openPerson(index) {
 
   const image = assetUrl(person.image);
   const role = [person.role, person.organization].filter(Boolean).join(" · ");
+  const officeImpactRole = String(person.office_impact_role || "").trim();
+  const longBio = String(person.bio_long || "").trim();
+  const shortBio = String(person.bio || "").trim();
+  const detailBio = longBio || shortBio;
   const linkedin = safeExternalUrl(person.linkedin_url);
 
   openDialog(`
@@ -513,9 +522,10 @@ function openPerson(index) {
           <span class="section-kicker">Community profile</span>
           <h2>${escapeHtml(person.name)}</h2>
           ${role ? `<div class="dialog-meta"><span>${escapeHtml(role)}</span></div>` : ""}
+          ${officeImpactRole ? `<div class="person-dialog__office-role"><span>Office Impact</span><strong>${escapeHtml(officeImpactRole)}</strong></div>` : ""}
         </div>
       </div>
-      <div class="dialog-copy">${person.bio ? `<p>${escapeHtml(person.bio)}</p>` : "<p>Profile details will be added soon.</p>"}</div>
+      <div class="dialog-copy person-dialog__bio">${detailBio ? `<p>${escapeHtml(detailBio)}</p>` : "<p>Profile details will be added soon.</p>"}</div>
       ${linkedin ? `<a class="dialog-source" href="${escapeHtml(linkedin)}" target="_blank" rel="noopener noreferrer">View LinkedIn profile &nearr;</a>` : ""}
     </div>`);
 

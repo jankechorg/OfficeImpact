@@ -1,0 +1,207 @@
+# Pages CMS configuration for the dedicated Office Impact repository.
+# Keep this file at the repository root as .pages.yml
+
+media:
+  input: media
+  output: media
+  rename: safe
+  categories: [image]
+  extensions: [jpg, jpeg, png, webp]
+
+settings:
+  content:
+    merge: true
+
+content:
+  - name: posts
+    label: Posts
+    type: file
+    path: content/posts.json
+    format: json
+    list: true
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: slug
+        label: Slug
+        type: string
+        required: true
+        pattern: "^[a-z0-9-]+$"
+      - name: date
+        label: Publication date
+        type: date
+        required: true
+      - name: category
+        label: Category
+        type: select
+        options:
+          values: [Community, Learning, Perspective, News]
+      - name: source
+        label: Source label
+        type: string
+      - name: source_url
+        label: Source / LinkedIn URL
+        type: string
+        description: Use an https:// URL.
+      - name: excerpt
+        label: Short summary
+        type: text
+        required: true
+      - name: image
+        label: Story image
+        type: image
+        description: Optional. The newest featured story uses this image on the homepage; all stories can show it in the detail view.
+        options:
+          path: stories
+          categories: [image]
+          extensions: [jpg, jpeg, png, webp]
+          rename: safe
+      - name: image_alt
+        label: Image description
+        type: string
+        description: Short description for accessibility. If empty, the story title is used.
+      - name: body
+        label: Full story
+        type: rich-text
+        options:
+          format: html
+          media: false
+          switcher: false
+      - name: featured
+        label: Featured
+        type: boolean
+        description: Featured stories are ordered first. The newest featured story becomes the large homepage highlight.
+      - name: published
+        label: Published
+        type: boolean
+        description: Hidden items remain in the public repository; do not use for confidential drafts.
+    operations:
+      create: true
+      rename: false
+      delete: true
+
+  - name: events
+    label: Events
+    type: file
+    path: content/events.json
+    format: json
+    list: true
+    fields:
+      - name: id
+        label: Event ID
+        type: string
+        required: true
+        pattern: "^[a-z0-9-]+$"
+      - name: title
+        label: Event title
+        type: string
+        required: true
+      - name: date
+        label: Date
+        type: date
+        required: true
+      - name: time
+        label: Time
+        type: string
+      - name: location
+        label: Venue / city
+        type: string
+      - name: address
+        label: Physical address
+        type: string
+        description: Full street address used for the map.
+      - name: venue_image
+        label: Venue image
+        type: image
+        description: Optional photo of the venue or building.
+        options:
+          path: events
+          categories: [image]
+          extensions: [jpg, jpeg, png, webp]
+          rename: safe
+      - name: map_query
+        label: Map location override
+        type: string
+        description: Optional. Use only if Google Maps does not resolve the physical address correctly. Enter a place name, address, or coordinates.
+      - name: type
+        label: Event type
+        type: select
+        options:
+          values: [Summit, Community meetup, Roundtable, Workshop, Online]
+      - name: summary
+        label: Short summary
+        type: text
+      - name: body
+        label: Event details
+        type: rich-text
+        options:
+          format: html
+          media: false
+          switcher: false
+      - name: registration_url
+        label: Registration / details URL
+        type: string
+        description: Use an https:// URL.
+      - name: published
+        label: Published
+        type: boolean
+        description: Hidden items remain in the public repository; do not use for confidential drafts.
+    operations:
+      create: true
+      rename: false
+      delete: true
+
+  - name: people
+    label: People
+    type: file
+    path: content/people.json
+    format: json
+    list: true
+    fields:
+      - name: name
+        label: Name
+        type: string
+        required: true
+      - name: role
+        label: Role
+        type: string
+      - name: organization
+        label: Organisation
+        type: string
+      - name: office_impact_role
+        label: Role in Office Impact
+        type: string
+        description: Optional community role, e.g. Founder, Core team, Host, Ambassador or Contributor.
+      - name: bio
+        label: Short bio - homepage
+        type: text
+        description: A concise introduction for the People card on the main page.
+      - name: bio_long
+        label: Full bio - profile detail
+        type: text
+        description: Optional longer biography shown when the profile is opened. If blank, the short bio is used.
+      - name: linkedin_url
+        label: LinkedIn URL
+        type: string
+        description: Use an https:// URL.
+      - name: image
+        label: Profile image
+        type: image
+        description: Upload or select an image, then save the person record.
+        options:
+          path: people
+          categories: [image]
+          extensions: [jpg, jpeg, png, webp]
+          rename: safe
+      - name: featured
+        label: Featured
+        type: boolean
+      - name: published
+        label: Published
+        type: boolean
+    operations:
+      create: true
+      rename: false
+      delete: true
