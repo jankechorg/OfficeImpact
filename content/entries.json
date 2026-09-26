@@ -29,18 +29,20 @@
     "published": true,
     "post_title": "Q1 Community Coffee Meetup",
     "publication_date": "2026-09-25",
-    "category": "Perspective",
+    "category": "Community",
     "post_summary": "A quarterly meetup for workplace professionals to connect, share ideas and shape better workplaces. Theme and agenda coming soon.",
     "post_body": "<p>The first Office Impact Community Meetup is for the people who run the workplace and shape how it feels.</p><p>Expect practical conversations, fresh ideas and time to connect with peers. More details, including the theme and agenda, will be shared soon.</p>",
     "source": "LinkedIn",
     "event_date": "2027-01-04",
     "event_time": "11:00 - 12:00",
     "event_type": "Community meetup",
+    "event_summary": "The first Office Impact Community Meetup is for the people who run the workplace and shape how it feels.",
     "event_details": "<p></p>",
     "event_location": "HiBob",
     "address": "Weesperstraat 113, 1018 VN Amsterdam",
     "venue_image": "media/hibob-2.webp",
-    "event_image_alt": "HiBob office"
+    "event_image_alt": "HiBob office",
+    "registration_url": "link here"
   },
   {
     "id": "office-impact-summit-2026",
