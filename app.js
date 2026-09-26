@@ -867,7 +867,7 @@ function setupNavigationTransition() {
   const overlay = $("#navTransition");
   if (!overlay) return;
 
-  $$(".main-nav a[href^='#'], .hero-actions a[href^='#']").forEach((link) => {
+  $$(".main-nav a[href^='#'], .hero-actions a[href^='#'], .site-header .brand--logo[href='#top']").forEach((link) => {
     link.addEventListener("click", (event) => {
       const selector = link.getAttribute("href");
       const target = selector ? $(selector) : null;
@@ -876,15 +876,27 @@ function setupNavigationTransition() {
       $(".site-header").classList.remove("is-open");
       $(".menu-button").setAttribute("aria-expanded", "false");
 
-      if (prefersReducedMotion.matches) return;
+      const scrollToTarget = (behavior) => {
+        if (selector === "#top") {
+          window.scrollTo({ top: 0, left: 0, behavior });
+        } else {
+          target.scrollIntoView({ behavior, block: "start" });
+        }
+        history.pushState(null, "", selector);
+      };
 
       event.preventDefault();
+
+      if (prefersReducedMotion.matches) {
+        scrollToTarget("auto");
+        return;
+      }
+
       overlay.classList.add("is-active");
       overlay.setAttribute("aria-hidden", "false");
 
       window.setTimeout(() => {
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-        history.pushState(null, "", selector);
+        scrollToTarget("smooth");
       }, 170);
 
       window.setTimeout(() => {
