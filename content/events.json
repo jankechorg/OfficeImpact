@@ -12,18 +12,5 @@
     "body": "<p>The first Office Impact Summit was created for the people who run the workplace and shape how it feels. The programme combined practical roundtables, keynote sessions and time to connect with peers.</p>",
     "registration_url": "https://officeimpact.co/",
     "published": false
-  },
-  {
-    "id": "test-event-001",
-    "title": "Q1 Community Coffee Meetup",
-    "date": "2027-01-22",
-    "time": "TBD",
-    "location": "HiBob office",
-    "address": "Weesperstraat 113, 1018 VN Amsterdam",
-    "venue_image": "media/hibob.webp",
-    "type": "Community meetup",
-    "summary": "The first Office Impact Community Meetup is for the people who run the workplace and shape how it feels.\n\nExpect practical conversations, fresh ideas and time to connect with peers. More details, including the theme and agenda, will be shared soon.",
-    "body": "<p>The first Office Impact Community Meetup is for the people who run the workplace and shape how it feels.</p><p>Expect practical conversations, fresh ideas and time to connect with peers. More details, including the theme and agenda, will be shared soon.</p>",
-    "published": true
   }
 ]
