@@ -1,6 +1,5 @@
 const state = {
-  posts: [],
-  events: [],
+  entries: [],
   people: [],
   calendarDate: null,
   eventView: "upcoming",
@@ -170,45 +169,64 @@ function isTrue(value) {
   return value === true || value === 1 || value === "true" || value === "1";
 }
 
+function isFalse(value) {
+  return value === false || value === 0 || value === "false" || value === "0";
+}
+
+function cleanText(value) {
+  return String(value || "").trim();
+}
+
+function isDateString(value) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(cleanText(value));
+}
+
+function entryPostTitle(entry) {
+  return cleanText(entry.post_title) || cleanText(entry.title) || "Untitled";
+}
+
+function entryCalendarTitle(entry) {
+  return cleanText(entry.calendar_title) || cleanText(entry.title) || entryPostTitle(entry);
+}
+
+function entryPublicationDate(entry) {
+  return cleanText(entry.publication_date) || cleanText(entry.event_date);
+}
+
+function entryShowsInPosts(entry) {
+  return isTrue(entry.show_in_posts);
+}
+
+function entryShowsInCalendar(entry) {
+  return isTrue(entry.show_in_calendar) && isDateString(entry.event_date);
+}
+
+function entryIsPublished(entry) {
+  return !isFalse(entry.published);
+}
+
+function entryIsPastEvent(entry) {
+  return entryShowsInCalendar(entry) && parseDate(entry.event_date) < startOfToday();
+}
+
 function getCalendarItems() {
-  const eventItems = state.events.map((event) => ({
-    key: `event:${event.id}`,
-    kind: "event",
-    sourceId: event.id,
-    title: event.title,
-    date: event.date,
-    time: event.time || "",
-    location: event.location || "",
-    type: event.type || "Community event",
-  }));
-
-  const postItems = state.posts
-    .filter((post) => /^\d{4}-\d{2}-\d{2}$/.test(String(post.event_date || "").trim()))
-    .map((post) => ({
-      key: `post:${post.slug}`,
-      kind: "post",
-      sourceId: post.slug,
-      title: post.title,
-      date: post.event_date,
-      time: post.event_time || "",
-      location: post.event_location || "",
-      type: post.event_type || "Webinar",
-    }));
-
-  return [...eventItems, ...postItems]
-    .filter((item) => item.title && /^\d{4}-\d{2}-\d{2}$/.test(String(item.date || "")))
+  return state.entries
+    .filter(entryShowsInCalendar)
+    .map((entry) => ({
+      key: cleanText(entry.id),
+      sourceId: cleanText(entry.id),
+      title: entryCalendarTitle(entry),
+      date: cleanText(entry.event_date),
+      time: cleanText(entry.event_time),
+      location: cleanText(entry.event_location),
+      type: cleanText(entry.event_type) || "Community event",
+    }))
+    .filter((item) => item.key && item.title && isDateString(item.date))
     .sort((a, b) => parseDate(a.date) - parseDate(b.date));
 }
 
 function openCalendarItem(key) {
-  const value = String(key || "");
-  if (value.startsWith("post:")) {
-    openPost(value.slice(5));
-    return;
-  }
-  if (value.startsWith("event:")) {
-    openEvent(value.slice(6));
-  }
+  openEntry(cleanText(key), "event");
 }
 
 async function loadJson(path) {
@@ -222,24 +240,19 @@ async function loadJson(path) {
 
 async function init() {
   try {
-    const [posts, events, people] = await Promise.all([
-      loadJson("./content/posts.json"),
-      loadJson("./content/events.json"),
+    const [entries, people] = await Promise.all([
+      loadJson("./content/entries.json"),
       loadJson("./content/people.json"),
     ]);
 
-    state.posts = posts
-      .filter((item) => item.published !== false)
-      .sort((a, b) => {
-        if (isTrue(a.featured) !== isTrue(b.featured)) return isTrue(a.featured) ? -1 : 1;
-        return parseDate(b.date) - parseDate(a.date);
-      });
+    state.entries = Array.isArray(entries)
+      ? entries.filter(entryIsPublished)
+      : [];
 
-    state.events = events
-      .filter((item) => item.published !== false)
-      .sort((a, b) => parseDate(a.date) - parseDate(b.date));
+    state.people = Array.isArray(people)
+      ? people.filter((item) => !isFalse(item.published))
+      : [];
 
-    state.people = people.filter((item) => item.published !== false);
     state.calendarDate = startOfMonth(startOfToday());
 
     renderCalendar();
@@ -416,15 +429,28 @@ function renderEvents() {
 
 function renderStories() {
   const container = $("#storyGrid");
-  if (!state.posts.length) {
+  const posts = state.entries
+    .filter(entryShowsInPosts)
+    .sort((a, b) => {
+      if (isTrue(a.featured_post) !== isTrue(b.featured_post)) return isTrue(a.featured_post) ? -1 : 1;
+      const aDate = entryPublicationDate(a);
+      const bDate = entryPublicationDate(b);
+      if (!aDate && !bDate) return 0;
+      if (!aDate) return 1;
+      if (!bDate) return -1;
+      return parseDate(bDate) - parseDate(aDate);
+    });
+
+  if (!posts.length) {
     container.innerHTML = `<div class="error-box">No published stories yet.</div>`;
     return;
   }
 
-  container.innerHTML = state.posts.slice(0, 6).map((post, index) => {
-    const image = assetUrl(post.image);
-    const imageAlt = String(post.image_alt || post.title || "").trim();
-    const isFeaturedCard = index === 0 && isTrue(post.featured);
+  container.innerHTML = posts.slice(0, 6).map((entry, index) => {
+    const image = assetUrl(entry.post_image);
+    const imageAlt = cleanText(entry.post_image_alt) || entryPostTitle(entry);
+    const postDate = entryPublicationDate(entry);
+    const isFeaturedCard = index === 0 && isTrue(entry.featured_post);
     const showFeaturedImage = Boolean(image && isFeaturedCard);
     const showThumbnail = Boolean(image && !isFeaturedCard);
     const imageClass = showFeaturedImage
@@ -444,19 +470,19 @@ function renderStories() {
             <img src="${escapeHtml(image)}" alt="${escapeHtml(imageAlt)}" loading="lazy">
           </div>` : ""}
         <div class="story-card__body">
-          <div class="story-card__meta"><span>${escapeHtml(post.category || "Update")}</span><span>${escapeHtml(formatDate(post.date, { day: "2-digit", month: "short", year: "numeric" }))}</span></div>
-          <h3>${escapeHtml(post.title)}</h3>
-          <p>${escapeHtml(post.excerpt || "")}</p>
+          <div class="story-card__meta"><span>${escapeHtml(cleanText(entry.category) || "Update")}</span>${postDate ? `<span>${escapeHtml(formatDate(postDate, { day: "2-digit", month: "short", year: "numeric" }))}</span>` : ""}</div>
+          <h3>${escapeHtml(entryPostTitle(entry))}</h3>
+          <p>${escapeHtml(cleanText(entry.post_summary))}</p>
           <div class="story-card__footer">
-            <span>${post.source === "LinkedIn" ? "LinkedIn highlight" : "Community story"}</span>
-            <button type="button" data-post="${escapeHtml(post.slug)}">Read &rarr;</button>
+            <span>${cleanText(entry.source) === "LinkedIn" ? "LinkedIn highlight" : "Community story"}</span>
+            <button type="button" data-entry-post="${escapeHtml(cleanText(entry.id))}">Read &rarr;</button>
           </div>
         </div>
       </article>`;
   }).join("");
 
-  $$('[data-post]', container).forEach((button) => {
-    button.addEventListener("click", () => openPost(button.dataset.post));
+  $$('[data-entry-post]', container).forEach((button) => {
+    button.addEventListener("click", () => openEntry(button.dataset.entryPost, "post"));
   });
 
   $$(".story-card__image img, .story-card__thumb img", container).forEach((img) => {
@@ -591,63 +617,16 @@ function openPerson(index) {
   if (imageElement) imageElement.addEventListener("error", () => imageElement.remove());
 }
 
-function openPost(slug) {
-  const post = state.posts.find((item) => item.slug === slug);
-  if (!post) return;
-
-  const sourceUrl = safeExternalUrl(post.source_url);
-  const image = assetUrl(post.image);
-  const imageAlt = String(post.image_alt || post.title || "").trim();
-  const eventDate = String(post.event_date || "").trim();
-  const eventTime = String(post.event_time || "").trim();
-  const eventLocation = String(post.event_location || "").trim();
-  const eventType = String(post.event_type || "Webinar").trim();
-  const eventMeta = /^\d{4}-\d{2}-\d{2}$/.test(eventDate)
-    ? [formatDate(eventDate), eventTime, eventLocation].filter(Boolean).join(" · ")
-    : "";
-  const body = post.body
-    ? sanitizeRichText(post.body)
-    : `<p>${escapeHtml(post.excerpt || "")}</p>`;
-
-  openDialog(`
-    <div class="dialog-body">
-      <span class="section-kicker">${escapeHtml(post.category || "Story")}</span>
-      <h2>${escapeHtml(post.title)}</h2>
-      <div class="dialog-meta"><span>${escapeHtml(formatDate(post.date))}</span>${post.source ? `<span>· ${escapeHtml(post.source)}</span>` : ""}</div>
-      ${eventMeta ? `<div class="dialog-meta"><span>${escapeHtml(eventType)}</span><span>· ${escapeHtml(eventMeta)}</span></div>` : ""}
-      ${image ? `
-        <figure class="story-dialog__image">
-          <img src="${escapeHtml(image)}" alt="${escapeHtml(imageAlt)}">
-        </figure>` : ""}
-      <div class="dialog-copy">${body}</div>
-      ${sourceUrl ? `<a class="dialog-source" href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">View original ${escapeHtml(post.source || "source")} &nearr;</a>` : ""}
-    </div>`);
-
-  const imageElement = $(".story-dialog__image img", $("#dialogContent"));
-  if (imageElement) {
-    imageElement.addEventListener("error", () => imageElement.closest(".story-dialog__image")?.remove(), { once: true });
-  }
-}
-
-function openEvent(id) {
-  const event = state.events.find((item) => item.id === id);
-  if (!event) return;
-
-  const registrationUrl = safeExternalUrl(event.registration_url);
-  const body = event.body
-    ? sanitizeRichText(event.body)
-    : `<p>${escapeHtml(event.summary || "")}</p>`;
-  const venue = String(event.location || "").trim();
-  const address = String(event.address || "").trim();
-  const mapQuery = String(event.map_query || "").trim() || address;
-  const venueImage = assetUrl(event.venue_image);
-  const meta = [event.time, venue].filter(Boolean).join(" · ");
+function buildFutureLocationBlock(entry) {
+  const venue = cleanText(entry.event_location);
+  const address = cleanText(entry.address);
+  const mapQuery = cleanText(entry.map_query) || address;
+  const venueImage = assetUrl(entry.venue_image);
   const maps = googleMapsUrls(mapQuery);
-
-  const locationPanels = [];
+  const panels = [];
 
   if (venue || address) {
-    locationPanels.push(`
+    panels.push(`
       <div class="event-location__panel event-location__details">
         <span class="event-location__label">Location</span>
         ${venue ? `<strong>${escapeHtml(venue)}</strong>` : ""}
@@ -656,18 +635,18 @@ function openEvent(id) {
   }
 
   if (venueImage) {
-    locationPanels.push(`
+    panels.push(`
       <figure class="event-location__panel event-location__image">
-        <img src="${escapeHtml(venueImage)}" alt="${escapeHtml(venue ? `${venue} venue` : `${event.title} venue`)}" loading="lazy">
+        <img src="${escapeHtml(venueImage)}" alt="${escapeHtml(venue ? `${venue} venue` : `${entryCalendarTitle(entry)} venue`)}" loading="lazy">
       </figure>`);
   }
 
   if (maps.embed) {
-    locationPanels.push(`
+    panels.push(`
       <div class="event-location__panel event-location__map">
         <iframe
           src="${escapeHtml(maps.embed)}"
-          title="Map for ${escapeHtml(event.title)}"
+          title="Map for ${escapeHtml(entryCalendarTitle(entry))}"
           loading="lazy"
           referrerpolicy="no-referrer-when-downgrade"
           allowfullscreen
@@ -675,20 +654,94 @@ function openEvent(id) {
       </div>`);
   }
 
-  const panelCount = Math.max(1, Math.min(3, locationPanels.length));
-  const locationBlock = locationPanels.length
-    ? `<div class="event-location event-location--${panelCount}">${locationPanels.join("")}</div>`
+  if (!panels.length) return "";
+  const count = Math.max(1, Math.min(3, panels.length));
+  return `<div class="event-location event-location--${count}">${panels.join("")}</div>`;
+}
+
+function buildEntryEventInfo(entry, past) {
+  if (!entryShowsInCalendar(entry)) return "";
+  const meta = [formatDate(entry.event_date), cleanText(entry.event_time), cleanText(entry.event_location)].filter(Boolean).join(" · ");
+  return `
+    <div class="entry-event-info">
+      <span class="entry-event-info__label">${past ? "Past event" : "Upcoming event"}</span>
+      <strong>${escapeHtml(entryCalendarTitle(entry))}</strong>
+      ${meta ? `<p>${escapeHtml(meta)}</p>` : ""}
+    </div>`;
+}
+
+function buildDialogImage(imageValue, altValue, extraClass = "") {
+  const image = assetUrl(imageValue);
+  if (!image) return "";
+  return `
+    <figure class="story-dialog__image${extraClass ? ` ${extraClass}` : ""}">
+      <img src="${escapeHtml(image)}" alt="${escapeHtml(cleanText(altValue))}">
+    </figure>`;
+}
+
+function openEntry(id, mode = "post") {
+  const entry = state.entries.find((item) => cleanText(item.id) === cleanText(id));
+  if (!entry) return;
+
+  const hasEvent = entryShowsInCalendar(entry);
+  const past = hasEvent && entryIsPastEvent(entry);
+  const sourceUrl = safeExternalUrl(entry.source_url);
+  const registrationUrl = safeExternalUrl(entry.registration_url);
+  const eventMeta = hasEvent
+    ? [formatDate(entry.event_date), cleanText(entry.event_time), cleanText(entry.event_location)].filter(Boolean).join(" · ")
     : "";
 
-  openDialog(`
-    <div class="dialog-body">
-      <span class="section-kicker">${escapeHtml(event.type || "Community event")}</span>
-      <h2>${escapeHtml(event.title)}</h2>
-      <div class="dialog-meta"><span>${escapeHtml(formatDate(event.date))}</span>${meta ? `<span>· ${escapeHtml(meta)}</span>` : ""}</div>
-      <div class="dialog-copy">${body}</div>
-      ${locationBlock}
-      ${registrationUrl ? `<a class="dialog-source" href="${escapeHtml(registrationUrl)}" target="_blank" rel="noopener noreferrer">Event details / registration &nearr;</a>` : ""}
-    </div>`);
+  if (mode === "event") {
+    const eventBodyRaw = past
+      ? cleanText(entry.post_body) || cleanText(entry.event_details) || cleanText(entry.post_summary) || cleanText(entry.event_summary)
+      : cleanText(entry.event_details) || cleanText(entry.event_summary) || cleanText(entry.post_body) || cleanText(entry.post_summary);
+    const eventBody = eventBodyRaw
+      ? (/<[a-z][\s\S]*>/i.test(eventBodyRaw) ? sanitizeRichText(eventBodyRaw) : `<p>${escapeHtml(eventBodyRaw)}</p>`)
+      : "";
+    const pastImageValue = cleanText(entry.event_image) || cleanText(entry.post_image);
+    const pastImageAlt = cleanText(entry.event_image_alt) || cleanText(entry.post_image_alt) || entryCalendarTitle(entry);
+    const media = past ? buildDialogImage(pastImageValue, pastImageAlt, "entry-event-photo") : "";
+    const locationBlock = !past ? buildFutureLocationBlock(entry) : "";
+
+    openDialog(`
+      <div class="dialog-body">
+        <span class="section-kicker">${escapeHtml(cleanText(entry.event_type) || "Community event")}</span>
+        <h2>${escapeHtml(entryCalendarTitle(entry))}</h2>
+        ${eventMeta ? `<div class="dialog-meta"><span>${escapeHtml(eventMeta)}</span></div>` : ""}
+        ${media}
+        ${eventBody ? `<div class="dialog-copy">${eventBody}</div>` : ""}
+        ${locationBlock}
+        ${!past && registrationUrl ? `<a class="dialog-source" href="${escapeHtml(registrationUrl)}" target="_blank" rel="noopener noreferrer">Event details / registration &nearr;</a>` : ""}
+        ${past && sourceUrl ? `<a class="dialog-source" href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">Related ${escapeHtml(cleanText(entry.source) || "source")} &nearr;</a>` : ""}
+      </div>`);
+  } else {
+    const postDate = entryPublicationDate(entry);
+    const bodyRaw = cleanText(entry.post_body) || cleanText(entry.post_summary);
+    const body = bodyRaw
+      ? (/<[a-z][\s\S]*>/i.test(bodyRaw) ? sanitizeRichText(bodyRaw) : `<p>${escapeHtml(bodyRaw)}</p>`)
+      : "";
+    const postVisual = cleanText(entry.post_image) || (past ? cleanText(entry.event_image) : "");
+    const postVisualAlt = cleanText(entry.post_image_alt) || cleanText(entry.event_image_alt) || entryPostTitle(entry);
+    const eventInfo = buildEntryEventInfo(entry, past);
+    const locationBlock = hasEvent && !past ? buildFutureLocationBlock(entry) : "";
+
+    openDialog(`
+      <div class="dialog-body">
+        <span class="section-kicker">${escapeHtml(cleanText(entry.category) || "Story")}</span>
+        <h2>${escapeHtml(entryPostTitle(entry))}</h2>
+        ${(postDate || cleanText(entry.source)) ? `<div class="dialog-meta">${postDate ? `<span>${escapeHtml(formatDate(postDate))}</span>` : ""}${cleanText(entry.source) ? `<span>· ${escapeHtml(cleanText(entry.source))}</span>` : ""}</div>` : ""}
+        ${buildDialogImage(postVisual, postVisualAlt)}
+        ${eventInfo}
+        ${body ? `<div class="dialog-copy">${body}</div>` : ""}
+        ${locationBlock}
+        ${hasEvent && !past && registrationUrl ? `<a class="dialog-source" href="${escapeHtml(registrationUrl)}" target="_blank" rel="noopener noreferrer">Event details / registration &nearr;</a>` : ""}
+        ${sourceUrl ? `<a class="dialog-source" href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">View original ${escapeHtml(cleanText(entry.source) || "source")} &nearr;</a>` : ""}
+      </div>`);
+  }
+
+  $$(".story-dialog__image img", $("#dialogContent")).forEach((imageElement) => {
+    imageElement.addEventListener("error", () => imageElement.closest(".story-dialog__image")?.remove(), { once: true });
+  });
 
   const location = $(".event-location", $("#dialogContent"));
   const venueImageElement = $(".event-location__image img", $("#dialogContent"));
