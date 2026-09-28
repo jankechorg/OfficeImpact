@@ -277,8 +277,29 @@ function showLoadErrors() {
 function renderCalendar() {
   const today = startOfToday();
   const currentMonth = startOfMonth(today);
-  const firstMonth = startOfMonth(state.calendarDate || currentMonth);
-  const months = Array.from({ length: 6 }, (_, index) => addMonths(firstMonth, index));
+  const isMobileCalendar = window.matchMedia("(max-width: 640px)").matches;
+  const futureEvents = getCalendarItems().filter((event) => parseDate(event.date) >= today);
+
+  const firstMonth = isMobileCalendar
+    ? currentMonth
+    : startOfMonth(state.calendarDate || currentMonth);
+
+  let monthCount = 6;
+  if (isMobileCalendar) {
+    let lastMonthToShow = addMonths(currentMonth, 11);
+
+    if (futureEvents.length) {
+      const furthestEventMonth = startOfMonth(parseDate(futureEvents[futureEvents.length - 1].date));
+      if (furthestEventMonth > lastMonthToShow) lastMonthToShow = furthestEventMonth;
+    }
+
+    monthCount =
+      (lastMonthToShow.getFullYear() - firstMonth.getFullYear()) * 12 +
+      (lastMonthToShow.getMonth() - firstMonth.getMonth()) +
+      1;
+  }
+
+  const months = Array.from({ length: monthCount }, (_, index) => addMonths(firstMonth, index));
   const lastMonth = months[months.length - 1];
 
   const firstLabel = new Intl.DateTimeFormat("en-GB", { month: "short" }).format(firstMonth);
@@ -292,13 +313,13 @@ function renderCalendar() {
   const prev = $("#calendarPrev");
   const next = $("#calendarNext");
   const atCurrentWindow = firstMonth <= currentMonth;
+  prev.hidden = isMobileCalendar;
+  next.hidden = isMobileCalendar;
   prev.disabled = atCurrentWindow;
   prev.setAttribute("aria-label", "Previous six months");
   next.setAttribute("aria-label", "Next six months");
   prev.title = "Previous six months";
   next.title = "Next six months";
-
-  const futureEvents = getCalendarItems().filter((event) => parseDate(event.date) >= today);
 
   const tiles = months.map((monthDate, index) => {
     const monthStart = startOfMonth(monthDate);
@@ -335,7 +356,7 @@ function renderCalendar() {
       </div>`;
   }).join("");
 
-  $("#calendarGrid").innerHTML = `<div class="month-overview" aria-label="Six month event overview">${tiles}</div>`;
+  $("#calendarGrid").innerHTML = `<div class="month-overview" aria-label="${isMobileCalendar ? "Scrollable future event calendar" : "Six month event overview"}">${tiles}</div>`;
 
   $$("[data-month-events]", $("#calendarGrid")).forEach((button) => {
     button.addEventListener("click", () => {
