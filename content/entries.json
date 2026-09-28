@@ -17,8 +17,7 @@
     "event_date": "2026-10-02",
     "event_time": "11:00 - 12:00",
     "event_type": "Online event",
-    "event_details": "<p></p>",
-    "event_location": "Online"
+    "event_details": "<p></p>"
   },
   {
     "id": "community-coffee-meetup",
