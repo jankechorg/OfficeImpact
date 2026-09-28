@@ -867,7 +867,7 @@ function setupNavigationTransition() {
   const overlay = $("#navTransition");
   if (!overlay) return;
 
-  $$(".main-nav a[href^='#'], .hero-actions a[href^='#'], .site-header .brand--logo[href='#top']").forEach((link) => {
+  $$(".main-nav a[href^='#'], .hero-actions a[href^='#'], a[href='#top']").forEach((link) => {
     link.addEventListener("click", (event) => {
       const selector = link.getAttribute("href");
       const target = selector ? $(selector) : null;
