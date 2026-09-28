@@ -285,7 +285,10 @@ function renderCalendar() {
     : startOfMonth(state.calendarDate || currentMonth);
 
   let monthCount = 6;
+
   if (isMobileCalendar) {
+    // Mobile shows one continuous horizontal strip: at least 12 months,
+    // extended automatically if there is an event further in the future.
     let lastMonthToShow = addMonths(currentMonth, 11);
 
     if (futureEvents.length) {
@@ -309,31 +312,36 @@ function renderCalendar() {
     : `${firstLabel} ${firstMonth.getFullYear()} - ${lastLabel} ${lastMonth.getFullYear()}`;
 
   const calendarLabel = $("#calendarLabel");
-  const calendarToolbar = $(".calendar-toolbar");
-  const calendarToolbarTitle = $(".calendar-toolbar__title");
-  const calendarToolbarCaption = $(".calendar-toolbar__title span");
-
-  calendarLabel.textContent = rangeLabel;
-  calendarLabel.style.whiteSpace = isMobileCalendar ? "nowrap" : "";
-
-  if (calendarToolbar) {
-    calendarToolbar.style.gridTemplateColumns = isMobileCalendar ? "1fr" : "";
-  }
-
-  if (calendarToolbarTitle) {
-    calendarToolbarTitle.style.width = isMobileCalendar ? "100%" : "";
-    calendarToolbarTitle.style.textAlign = isMobileCalendar ? "center" : "";
-  }
-
-  if (calendarToolbarCaption) {
-    calendarToolbarCaption.textContent = isMobileCalendar ? "Upcoming months" : "Next six months";
-  }
-
+  const toolbar = $(".calendar-toolbar");
+  const toolbarTitle = $(".calendar-toolbar__title");
+  const toolbarCaption = $(".calendar-toolbar__title span");
   const prev = $("#calendarPrev");
   const next = $("#calendarNext");
+
+  calendarLabel.textContent = rangeLabel;
+
+  if (isMobileCalendar) {
+    // Keep the heading compact and on one line on phones.
+    toolbar.style.gridTemplateColumns = "1fr";
+    toolbarTitle.style.width = "100%";
+    toolbarTitle.style.textAlign = "center";
+    toolbarCaption.textContent = "Upcoming months";
+    toolbarCaption.style.whiteSpace = "nowrap";
+    calendarLabel.style.whiteSpace = "nowrap";
+    prev.style.display = "none";
+    next.style.display = "none";
+  } else {
+    toolbar.style.gridTemplateColumns = "";
+    toolbarTitle.style.width = "";
+    toolbarTitle.style.textAlign = "";
+    toolbarCaption.textContent = "Next six months";
+    toolbarCaption.style.whiteSpace = "";
+    calendarLabel.style.whiteSpace = "";
+    prev.style.display = "";
+    next.style.display = "";
+  }
+
   const atCurrentWindow = firstMonth <= currentMonth;
-  prev.hidden = isMobileCalendar;
-  next.hidden = isMobileCalendar;
   prev.disabled = atCurrentWindow;
   prev.setAttribute("aria-label", "Previous six months");
   next.setAttribute("aria-label", "Next six months");
@@ -376,6 +384,20 @@ function renderCalendar() {
   }).join("");
 
   $("#calendarGrid").innerHTML = `<div class="month-overview" aria-label="${isMobileCalendar ? "Scrollable future event calendar" : "Six month event overview"}">${tiles}</div>`;
+
+  const monthOverview = $(".month-overview", $("#calendarGrid"));
+  if (isMobileCalendar && monthOverview) {
+    // Horizontal-only interaction on mobile: no vertical drifting/rubber-banding
+    // while the user is swiping through the months.
+    monthOverview.style.display = "flex";
+    monthOverview.style.overflowX = "auto";
+    monthOverview.style.overflowY = "hidden";
+    monthOverview.style.touchAction = "pan-x";
+    monthOverview.style.overscrollBehaviorX = "contain";
+    monthOverview.style.overscrollBehaviorY = "none";
+    monthOverview.style.scrollSnapType = "x proximity";
+    monthOverview.style.webkitOverflowScrolling = "touch";
+  }
 
   $$("[data-month-events]", $("#calendarGrid")).forEach((button) => {
     button.addEventListener("click", () => {
