@@ -308,7 +308,26 @@ function renderCalendar() {
     ? `${firstLabel} - ${lastLabel} ${lastMonth.getFullYear()}`
     : `${firstLabel} ${firstMonth.getFullYear()} - ${lastLabel} ${lastMonth.getFullYear()}`;
 
-  $("#calendarLabel").textContent = rangeLabel;
+  const calendarLabel = $("#calendarLabel");
+  const calendarToolbar = $(".calendar-toolbar");
+  const calendarToolbarTitle = $(".calendar-toolbar__title");
+  const calendarToolbarCaption = $(".calendar-toolbar__title span");
+
+  calendarLabel.textContent = rangeLabel;
+  calendarLabel.style.whiteSpace = isMobileCalendar ? "nowrap" : "";
+
+  if (calendarToolbar) {
+    calendarToolbar.style.gridTemplateColumns = isMobileCalendar ? "1fr" : "";
+  }
+
+  if (calendarToolbarTitle) {
+    calendarToolbarTitle.style.width = isMobileCalendar ? "100%" : "";
+    calendarToolbarTitle.style.textAlign = isMobileCalendar ? "center" : "";
+  }
+
+  if (calendarToolbarCaption) {
+    calendarToolbarCaption.textContent = isMobileCalendar ? "Upcoming months" : "Next six months";
+  }
 
   const prev = $("#calendarPrev");
   const next = $("#calendarNext");
