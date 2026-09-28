@@ -337,3 +337,83 @@ button.month-tile{cursor:pointer}
   .entry-event-info{padding:16px;margin-bottom:22px}
   .entry-event-photo img{max-height:68vh}
 }
+
+/* Mobile compact layout */
+@media (max-width:640px){
+
+  /* More compact hero */
+  .hero{
+    padding:26px 0 36px;
+  }
+
+  .hero-grid{
+    gap:26px;
+  }
+
+  .hero h1{
+    font-size:52px;
+    line-height:.88;
+    margin:10px 0 20px;
+  }
+
+  .hero-lead{
+    font-size:18px;
+    line-height:1.38;
+    margin-bottom:22px;
+  }
+
+  /* Two CTAs next to each other */
+  .hero-actions{
+    display:grid;
+    grid-template-columns:.95fr 1.05fr;
+    gap:10px;
+    width:100%;
+  }
+
+  .hero-actions > a{
+    width:100%;
+    min-height:54px;
+    padding:11px 12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-size:14px;
+    line-height:1.15;
+    border-radius:999px;
+    white-space:normal;
+  }
+
+  .hero-actions .text-link{
+    border-bottom:0;
+    padding-bottom:11px;
+  }
+
+  /* Bring image closer and make hero shorter */
+  .hero-art.hero-photo{
+    min-height:330px;
+    border-radius:26px;
+  }
+
+  /* Generally reduce large mobile section gaps */
+  .manifesto{
+    padding:40px 0;
+  }
+
+  .manifesto-grid{
+    gap:22px;
+  }
+
+  .section{
+    padding:56px 0;
+  }
+
+  .section-heading{
+    gap:16px;
+    margin-bottom:26px;
+  }
+
+  .footer{
+    margin-top:42px;
+  }
+}
