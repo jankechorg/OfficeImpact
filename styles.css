@@ -448,3 +448,38 @@ button.month-tile{cursor:pointer}
     padding-top:38px;
   }
 }
+/* Final mobile vertical spacing */
+@media (max-width:640px){
+
+  /* End People section sooner */
+  section.section--people{
+    padding-bottom:20px !important;
+  }
+
+  /* Minimal space around Stay Connected */
+  section.section--join{
+    padding-top:12px !important;
+    padding-bottom:20px !important;
+  }
+
+  /* Keep the card itself compact */
+  .join-card{
+    padding:30px 26px !important;
+    gap:24px !important;
+  }
+
+  .join-card h2{
+    margin-top:8px;
+  }
+
+  .join-card__copy p{
+    margin-bottom:20px;
+  }
+
+  /* Remove the large blank zone after the card */
+  footer.footer{
+    margin-top:0 !important;
+    padding-top:30px !important;
+    padding-bottom:30px !important;
+  }
+}
