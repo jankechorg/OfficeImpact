@@ -417,3 +417,34 @@ button.month-tile{cursor:pointer}
     margin-top:42px;
   }
 }
+
+/* Tighten final mobile sections */
+@media (max-width:640px){
+
+  /* Less space after People */
+  .section--people{
+    padding-bottom:28px;
+  }
+
+  /* Pull Stay Connected closer to the previous section */
+  .section--join{
+    padding-top:18px;
+    padding-bottom:24px;
+  }
+
+  /* Slightly more compact card */
+  .join-card{
+    padding:32px 26px;
+    gap:28px;
+  }
+
+  .join-card h2{
+    margin-top:8px;
+  }
+
+  /* Remove the large gap before footer */
+  .footer{
+    margin-top:20px;
+    padding-top:38px;
+  }
+}
