@@ -69,19 +69,5 @@
     "address": "Danzigerbocht 55, 1013 AM Amsterdam, Netherlands",
     "venue_image": "media/db55.jpg",
     "registration_url": "https://officeimpact.co/"
-  },
-  {
-    "id": "test2026",
-    "title": "Test",
-    "show_in_calendar": false,
-    "show_in_posts": true,
-    "featured_post": false,
-    "published": true,
-    "calendar_title": "Test",
-    "publication_date": "2026-11-17",
-    "post_body": "<p></p>",
-    "event_date": "2026-11-17",
-    "event_summary": "Test",
-    "event_details": "<p></p>"
   }
 ]
